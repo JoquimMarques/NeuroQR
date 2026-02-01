@@ -88,7 +88,7 @@ export default function App() {
         />
       )}
 
-      <div className="ad-container ad-top">Advertisement Space (728x90)</div>
+
 
       <header className="title-container">
         <h1 className="title">NeuroQR</h1>
@@ -113,7 +113,7 @@ export default function App() {
           <>
             <div className="qr-display-area">
               <QrGenerator options={options} onInstanceReady={setQrInstance} />
-              <div className="ad-container ad-sidebar">Banner AD</div>
+
             </div>
             <div className="controls-area" style={{ opacity: isProcessing ? 0.5 : 1, pointerEvents: isProcessing ? 'none' : 'auto' }}>
               <Controls
@@ -128,7 +128,7 @@ export default function App() {
         )}
       </main>
 
-      <div className="ad-container ad-bottom">Advertisement Space (Video or Display)</div>
+
     </div>
   );
 }
