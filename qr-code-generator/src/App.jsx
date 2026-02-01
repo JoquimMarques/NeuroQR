@@ -2,6 +2,8 @@ import { useState } from "react";
 import QrGenerator from "./components/QrGenerator";
 import Controls from "./components/Controls";
 import ProcessingOverlay from "./components/ProcessingOverlay";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
 import "./styles/App.css";
 
 export default function App() {
@@ -22,6 +24,7 @@ export default function App() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingProgress, setProcessingProgress] = useState(0);
   const [processingMessage, setProcessingMessage] = useState("");
+  const [currentPage, setCurrentPage] = useState("home");
 
   const simulateProgress = (message, duration = 2000) => {
     return new Promise((resolve) => {
@@ -90,45 +93,58 @@ export default function App() {
 
 
 
-      <header className="title-container">
-        <h1 className="title">NeuroQR</h1>
-        <p className="subtitle">Fast and Professional QR Code Generator</p>
-      </header>
 
-      <main className="main-card">
-        <div className="input-section">
-          <input
-            type="text"
-            placeholder="Paste your URL or text here"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && gerarQR()}
-          />
-          <button className="btn-generate" onClick={gerarQR} disabled={isProcessing}>
-            {isProcessing ? "Processing..." : "Generate"}
-          </button>
-        </div>
+      {currentPage === "home" && (
+        <>
+          <header className="title-container">
+            <h1 className="title">NeuroQR</h1>
+            <p className="subtitle">Fast and Professional QR Code Generator</p>
+          </header>
 
-        {showQR && (
-          <>
-            <div className="qr-display-area">
-              <QrGenerator options={options} onInstanceReady={setQrInstance} />
-
-            </div>
-            <div className="controls-area" style={{ opacity: isProcessing ? 0.5 : 1, pointerEvents: isProcessing ? 'none' : 'auto' }}>
-              <Controls
-                options={options}
-                setOptions={setOptions}
-                onDownload={handleDownload}
-                onLogoChange={handleLogoChange}
-                onLogoClear={clearLogo}
+          <main className="main-card">
+            <div className="input-section">
+              <input
+                type="text"
+                placeholder="Paste your URL or text here"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && gerarQR()}
               />
+              <button className="btn-generate" onClick={gerarQR} disabled={isProcessing}>
+                {isProcessing ? "Processing..." : "Generate"}
+              </button>
             </div>
-          </>
-        )}
-      </main>
 
+            {showQR && (
+              <>
+                <div className="qr-display-area">
+                  <QrGenerator options={options} onInstanceReady={setQrInstance} />
+                </div>
+                <div className="controls-area" style={{ opacity: isProcessing ? 0.5 : 1, pointerEvents: isProcessing ? 'none' : 'auto' }}>
+                  <Controls
+                    options={options}
+                    setOptions={setOptions}
+                    onDownload={handleDownload}
+                    onLogoChange={handleLogoChange}
+                    onLogoClear={clearLogo}
+                  />
+                </div>
+              </>
+            )}
+          </main>
+        </>
+      )}
 
+      {currentPage === "privacy" && <PrivacyPolicy onBack={() => setCurrentPage("home")} />}
+      {currentPage === "terms" && <TermsOfService onBack={() => setCurrentPage("home")} />}
+
+      <footer className="app-footer">
+        <p>© 2026 NeuroQR. All rights reserved.</p>
+        <div className="footer-links">
+          <button onClick={() => setCurrentPage("privacy")}>Privacy Policy</button>
+          <button onClick={() => setCurrentPage("terms")}>Terms of Service</button>
+        </div>
+      </footer>
     </div>
   );
 }
