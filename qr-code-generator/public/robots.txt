@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://neuroqr.com/sitemap.xml
+Sitemap: https://www.neuroqr.online/sitemap.xml
