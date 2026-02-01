@@ -1,6 +1,7 @@
 import { useState } from "react";
 import QrGenerator from "./components/QrGenerator";
 import Controls from "./components/Controls";
+import ProcessingOverlay from "./components/ProcessingOverlay";
 import "./styles/App.css";
 
 export default function App() {
@@ -9,7 +10,7 @@ export default function App() {
     color: "#000000",
     bgColor: "#ffffff",
     style: "rounded",
-    size: 300,
+    size: 250,
     logo: null,
     cornerSquareType: "extra-rounded",
     cornerDotType: "dot",
@@ -18,17 +19,49 @@ export default function App() {
   const [input, setInput] = useState("");
   const [showQR, setShowQR] = useState(false);
   const [qrInstance, setQrInstance] = useState(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [processingProgress, setProcessingProgress] = useState(0);
+  const [processingMessage, setProcessingMessage] = useState("");
 
-  const gerarQR = () => {
+  const simulateProgress = (message, duration = 2000) => {
+    return new Promise((resolve) => {
+      setIsProcessing(true);
+      setProcessingMessage(message);
+      setProcessingProgress(0);
+
+      const interval = 20;
+      const step = (100 / (duration / interval));
+      let currentProgress = 0;
+
+      const timer = setInterval(() => {
+        currentProgress += step;
+        if (currentProgress >= 100) {
+          clearInterval(timer);
+          setProcessingProgress(100);
+          setTimeout(() => {
+            setIsProcessing(false);
+            resolve();
+          }, 300);
+        } else {
+          setProcessingProgress(currentProgress);
+        }
+      }, interval);
+    });
+  };
+
+  const gerarQR = async () => {
     if (input.trim() === "") return;
+
+    await simulateProgress("Generating NeuroQR...");
     setOptions({ ...options, data: input });
     setShowQR(true);
   };
 
-  const handleDownload = (format) => {
-    if (qrInstance) {
-      qrInstance.download({ name: "neuro-qr-code", extension: format });
-    }
+  const handleDownload = async (format) => {
+    if (!qrInstance) return;
+
+    await simulateProgress(`Optimizing ${format.toUpperCase()} Resolution...`, 1500);
+    qrInstance.download({ name: "neuro-qr-code", extension: format });
   };
 
   const handleLogoChange = (e) => {
@@ -48,6 +81,13 @@ export default function App() {
 
   return (
     <div className="app">
+      {isProcessing && (
+        <ProcessingOverlay
+          progress={processingProgress}
+          message={processingMessage}
+        />
+      )}
+
       <div className="ad-container ad-top">Advertisement Space (728x90)</div>
 
       <header className="title-container">
@@ -59,12 +99,14 @@ export default function App() {
         <div className="input-section">
           <input
             type="text"
-            placeholder="Paste your URL or text..."
+            placeholder="Paste your URL or text here"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && gerarQR()}
           />
-          <button className="btn-generate" onClick={gerarQR}>Generate</button>
+          <button className="btn-generate" onClick={gerarQR} disabled={isProcessing}>
+            {isProcessing ? "Processing..." : "Generate"}
+          </button>
         </div>
 
         {showQR && (
@@ -73,7 +115,7 @@ export default function App() {
               <QrGenerator options={options} onInstanceReady={setQrInstance} />
               <div className="ad-container ad-sidebar">Banner AD</div>
             </div>
-            <div className="controls-area">
+            <div className="controls-area" style={{ opacity: isProcessing ? 0.5 : 1, pointerEvents: isProcessing ? 'none' : 'auto' }}>
               <Controls
                 options={options}
                 setOptions={setOptions}
