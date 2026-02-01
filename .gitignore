@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+qr-code-generator/node_modules/
+
+# Production
+dist/
+dist-ssr/
+qr-code-generator/dist/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Editor
+.vscode/
+.idea/
+.DS_Store
+
+# Misc
+*.local
+suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

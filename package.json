@@ -1,0 +1,10 @@
+{
+  "scripts": {
+    "dev": "npm run dev --prefix qr-code-generator",
+    "build": "npm run build --prefix qr-code-generator",
+    "preview": "npm run preview --prefix qr-code-generator"
+  },
+  "dependencies": {
+    "qr-code-styling": "^1.9.2"
+  }
+}
