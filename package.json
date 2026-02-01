@@ -1,5 +1,8 @@
 {
+  "name": "neuro-qr-root",
+  "private": true,
   "scripts": {
+    "postinstall": "npm install --prefix qr-code-generator",
     "dev": "npm run dev --prefix qr-code-generator",
     "build": "npm run build --prefix qr-code-generator",
     "preview": "npm run preview --prefix qr-code-generator"
