@@ -1,150 +1,123 @@
-import { useState } from "react";
-import QrGenerator from "./components/QrGenerator";
-import Controls from "./components/Controls";
-import ProcessingOverlay from "./components/ProcessingOverlay";
+import { useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import {
+  MessageCircle,
+  Instagram,
+  Wifi,
+  User,
+  Building2,
+  Zap,
+  Palette,
+  Gem,
+} from "lucide-react";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
+import {
+  WhatsAppPage,
+  InstagramPage,
+  WifiPage,
+  VCardPage,
+  BusinessPage
+} from "./pages/SEOPages";
 import "./styles/App.css";
 
-export default function App() {
-  const [options, setOptions] = useState({
-    data: "",
-    color: "#000000",
-    bgColor: "#ffffff",
-    style: "rounded",
-    size: 250,
-    logo: null,
-    cornerSquareType: "extra-rounded",
-    cornerDotType: "dot",
-  });
+function Home() {
+  useEffect(() => {
+    document.title = "Free Professional QR Code Generator | NeuroQR";
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) {
+      metaDesc.setAttribute("content", "Generate unlimited, high-quality, professional QR codes for free with NeuroQR. Customize with logos and HD SVG exports.");
+    }
+  }, []);
 
-  const [input, setInput] = useState("");
-  const [showQR, setShowQR] = useState(false);
-  const [qrInstance, setQrInstance] = useState(null);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [processingProgress, setProcessingProgress] = useState(0);
-  const [processingMessage, setProcessingMessage] = useState("");
-  const [currentPage, setCurrentPage] = useState("home");
-
-  const simulateProgress = (message, duration = 2000) => {
-    return new Promise((resolve) => {
-      setIsProcessing(true);
-      setProcessingMessage(message);
-      setProcessingProgress(0);
-
-      const interval = 20;
-      const step = (100 / (duration / interval));
-      let currentProgress = 0;
-
-      const timer = setInterval(() => {
-        currentProgress += step;
-        if (currentProgress >= 100) {
-          clearInterval(timer);
-          setProcessingProgress(100);
-          setTimeout(() => {
-            setIsProcessing(false);
-            resolve();
-          }, 300);
-        } else {
-          setProcessingProgress(currentProgress);
-        }
-      }, interval);
-    });
-  };
-
-  const gerarQR = async () => {
-    if (input.trim() === "") return;
-
-    await simulateProgress("Generating NeuroQR...");
-    setOptions({ ...options, data: input });
-    setShowQR(true);
-  };
-
-  const handleDownload = async (format) => {
-    if (!qrInstance) return;
-
-    await simulateProgress(`Optimizing ${format.toUpperCase()} Resolution...`, 1500);
-    qrInstance.download({ name: "neuro-qr-code", extension: format });
-  };
-
-  const handleLogoChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        setOptions({ ...options, logo: event.target.result });
-      };
-      reader.readAsDataURL(file);
+  const triggerSelectionAd = () => {
+    try {
+      (function (s) { s.dataset.zone = '10599682', s.src = 'https://nap5k.com/tag.min.js' })([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')));
+    } catch (e) {
+      console.error("Ad script failed", e);
     }
   };
 
-  const clearLogo = () => {
-    setOptions({ ...options, logo: null });
-  };
+  const qrTypes = [
+    { path: "/qr-code-for-whatsapp", title: "WhatsApp", desc: "Direct link to chat", icon: <MessageCircle size={28} />, color: "#25D366" },
+    { path: "/qr-code-for-instagram", title: "Instagram", desc: "Profile & posts", icon: <Instagram size={28} />, color: "#B02E6C" },
+    { path: "/wifi-qr-code-generator", title: "WiFi", desc: "Share passwords", icon: <Wifi size={28} />, color: "#3498db" },
+    { path: "/vcard-qr-code", title: "vCard", desc: "Digital contacts", icon: <User size={28} />, color: "#f1c40f" },
+    { path: "/qr-code-for-business", title: "Business", desc: "Elevate brand", icon: <Building2 size={28} />, color: "#34495e" },
+  ];
 
   return (
-    <div className="app">
-      {isProcessing && (
-        <ProcessingOverlay
-          progress={processingProgress}
-          message={processingMessage}
-        />
-      )}
+    <div className="home-container">
+      <header className="home-hero">
+        <h1 className="hero-title">Neuro<span>QR</span></h1>
+        <p className="hero-subtitle">The most powerful and professional QR code platform</p>
+      </header>
 
-
-
-
-      {currentPage === "home" && (
-        <>
-          <header className="title-container">
-            <h1 className="title">NeuroQR</h1>
-            <p className="subtitle">Fast and Professional QR Code Generator</p>
-          </header>
-
-          <main className="main-card">
-            <div className="input-section">
-              <input
-                type="text"
-                placeholder="Paste your URL or text here"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && gerarQR()}
-              />
-              <button className="btn-generate" onClick={gerarQR} disabled={isProcessing}>
-                {isProcessing ? "Processing..." : "Generate"}
-              </button>
+      <div className="selection-grid">
+        {qrTypes.map((type) => (
+          <Link
+            key={type.path}
+            to={type.path}
+            className="selection-card"
+            onClick={triggerSelectionAd}
+          >
+            <div className="card-icon" style={{ backgroundColor: type.color }}>{type.icon}</div>
+            <div className="card-info">
+              <h3>{type.title}</h3>
+              <p>{type.desc}</p>
             </div>
+            <div className="card-arrow">→</div>
+          </Link>
+        ))}
+      </div>
 
-            {showQR && (
-              <>
-                <div className="qr-display-area">
-                  <QrGenerator options={options} onInstanceReady={setQrInstance} />
-                </div>
-                <div className="controls-area" style={{ opacity: isProcessing ? 0.5 : 1, pointerEvents: isProcessing ? 'none' : 'auto' }}>
-                  <Controls
-                    options={options}
-                    setOptions={setOptions}
-                    onDownload={handleDownload}
-                    onLogoChange={handleLogoChange}
-                    onLogoClear={clearLogo}
-                  />
-                </div>
-              </>
-            )}
-          </main>
-        </>
-      )}
-
-      {currentPage === "privacy" && <PrivacyPolicy onBack={() => setCurrentPage("home")} />}
-      {currentPage === "terms" && <TermsOfService onBack={() => setCurrentPage("home")} />}
-
-      <footer className="app-footer">
-        <p>© 2026 NeuroQR. All rights reserved.</p>
-        <div className="footer-links">
-          <button onClick={() => setCurrentPage("privacy")}>Privacy Policy</button>
-          <button onClick={() => setCurrentPage("terms")}>Terms of Service</button>
+      <section className="features-section">
+        <div className="feature-item">
+          <div className="feat-icon"><Zap size={32} color="#e63946" /></div>
+          <h4>Fast Generation</h4>
+          <p>Instant processing with real-time preview.</p>
         </div>
-      </footer>
+        <div className="feature-item">
+          <div className="feat-icon"><Palette size={32} color="#e63946" /></div>
+          <h4>Custom Brand</h4>
+          <p>Add logos and unique colors to your codes.</p>
+        </div>
+        <div className="feature-item">
+          <div className="feat-icon"><Gem size={32} color="#e63946" /></div>
+          <h4>Premium Quality</h4>
+          <p>High resolution SVG and PNG exports.</p>
+        </div>
+      </section>
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <Router>
+      <div className="app-main">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/qr-code-for-whatsapp" element={<WhatsAppPage />} />
+          <Route path="/qr-code-for-instagram" element={<InstagramPage />} />
+          <Route path="/wifi-qr-code-generator" element={<WifiPage />} />
+          <Route path="/vcard-qr-code" element={<VCardPage />} />
+          <Route path="/qr-code-for-business" element={<BusinessPage />} />
+          <Route path="/privacy" element={<PrivacyPolicy onBack={() => window.history.back()} />} />
+          <Route path="/terms" element={<TermsOfService onBack={() => window.history.back()} />} />
+        </Routes>
+
+        <footer className="footer-premium">
+          <div className="footer-bottom">
+            <div className="footer-mini-links">
+              <Link to="/privacy">Privacy Policy</Link>
+              <span className="separator">|</span>
+              <Link to="/terms">Terms of Service</Link>
+            </div>
+            <p>© 2026 NeuroQR. Built for speed and SEO.</p>
+          </div>
+        </footer>
+      </div>
+    </Router>
   );
 }
